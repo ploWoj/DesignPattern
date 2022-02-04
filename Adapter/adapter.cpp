@@ -2,7 +2,7 @@
 #include <string>
 
 typedef int Cable; // wire
-
+// Adaptee Interface
 class EuropeanSocketInterface
 {
 public:
@@ -12,10 +12,11 @@ public:
     virtual Cable earth() = 0;
 };
 
+// Adaptee
 class Socket : public EuropeanSocketInterface
 {
 public:
-    int voltage()
+    int voltage() override
     {
         return 230;
     }
@@ -32,5 +33,67 @@ public:
     Cable earth() override
     {
         return 0;
+    }
+};
+
+// Target Interface
+class AmericanSocetInterface
+{
+public:
+    virtual int voltage() = 0;
+
+    virtual Cable live() = 0;
+    virtual Cable neutral() = 0;
+};
+
+// The Adapter
+
+class Adapter : public AmericanSocetInterface
+{
+    EuropeanSocketInterface *socket_;
+
+public:
+    void plugIn(EuropeanSocketInterface *outlet)
+    {
+        socket_ = outlet;
+    }
+
+    int voltage() override
+    {
+        return 110;
+    }
+
+    Cable live() override
+    {
+        return socket_->live();
+    }
+
+    Cable neutral() override
+    {
+        return socket_->neutral();
+    }
+};
+
+class ElectricKettle
+{
+    AmericanSocetInterface *power_;
+
+public:
+    void plugIn(AmericanSocetInterface *supply)
+    {
+        power_ = supply;
+    }
+
+    void boil()
+    {
+        if (power_->voltage() > 110)
+        {
+            std::cout << "Kettle is on fire" << '\n';
+        }
+
+        if (power_->live() == 1 && power_->neutral() == -1)
+        {
+            std::cout << "Coffee time!" << '\n';
+        }
     }
 };
