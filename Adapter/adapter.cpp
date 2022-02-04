@@ -97,3 +97,21 @@ public:
         }
     }
 };
+
+int main()
+{
+
+    Socket *socket = new Socket;
+    Adapter *adapter = new Adapter;
+    ElectricKettle *kettle = new ElectricKettle;
+
+    adapter->plugIn(socket);
+    kettle->plugIn(adapter);
+    kettle->boil();
+
+    delete kettle;
+    delete adapter;
+    delete socket;
+
+    return 0;
+}
